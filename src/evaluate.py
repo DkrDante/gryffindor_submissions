@@ -1,4 +1,3 @@
-# src/evaluate.py
 import os
 import sys
 import platform
@@ -81,11 +80,46 @@ def task_data_list_and_counts():
     return df
 
 
+def list_images_and_labels(dataset_dir: str):
+    """Utility: returns (image_paths, labels, class_names) for all images under dataset_dir/class/*"""
+    image_paths: list[str] = []
+    labels: list[int] = []
+    class_names = sorted([c for c in os.listdir(dataset_dir) if os.path.isdir(os.path.join(dataset_dir, c))])
+    class_to_idx = {c: i for i, c in enumerate(class_names)}
+
+    for class_name in class_names:
+        class_dir = os.path.join(dataset_dir, class_name)
+        for fname in os.listdir(class_dir):
+            if fname.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tiff")):
+                image_paths.append(os.path.join(class_dir, fname))
+                labels.append(class_to_idx[class_name])
+
+    return image_paths, labels, class_names
+
+
 def task_data_split(df_counts):
-    """3. Splits data into stratified train/test sets."""
-    # This is a placeholder for baseline training. The main model evaluates on all data.
-    # If you train a baseline, you'll need the file paths and labels here.
-    return {"split_ratio": TEST_SPLIT_RATIO, "split_seed": RANDOM_SEED}
+    """3. Splits data into stratified train/test sets and returns paths/labels."""
+    image_paths, labels, class_names = list_images_and_labels(DATASET_DIR)
+    if len(image_paths) == 0:
+        raise ValueError("No images found for splitting")
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        image_paths,
+        labels,
+        test_size=TEST_SPLIT_RATIO,
+        random_state=RANDOM_SEED,
+        stratify=labels,
+    )
+
+    return {
+        "split_ratio": TEST_SPLIT_RATIO,
+        "split_seed": RANDOM_SEED,
+        "X_train": X_train,
+        "X_test": X_test,
+        "y_train": y_train,
+        "y_test": y_test,
+        "class_names": class_names,
+    }
 
 
 def task_load_model():
@@ -98,7 +132,7 @@ def task_load_model():
         return f"Error loading model: {e}"
 
 
-def task_preprocessing_and_inference(model):
+def task_preprocessing_and_inference(model, image_paths_in: list[str] | None = None):
     """5 & 6. Preprocesses images and runs model inference."""
     try:
         # Get model's expected input shape
@@ -108,27 +142,14 @@ def task_preprocessing_and_inference(model):
         results = []
 
         # Get all image paths and labels
-        image_paths = []
-        true_labels = []
-        class_names = []
-        
-        # Get class directories only
-        for cls in os.listdir(DATASET_DIR):
-            cls_path = os.path.join(DATASET_DIR, cls)
-            if os.path.isdir(cls_path):
-                class_names.append(cls)
-        
-        class_names = sorted(class_names)
-
-        if not class_names:
-            raise ValueError("No class directories found in dataset")
-
-        for i, class_name in enumerate(class_names):
-            class_dir = os.path.join(DATASET_DIR, class_name)
-            for fname in os.listdir(class_dir):
-                if fname.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-                    image_paths.append(os.path.join(class_dir, fname))
-                    true_labels.append(i)  # Use integer labels
+        if image_paths_in is None:
+            image_paths, true_labels, class_names = list_images_and_labels(DATASET_DIR)
+        else:
+            # Derive labels from paths
+            all_paths, all_labels, class_names = list_images_and_labels(DATASET_DIR)
+            index_by_path = {p: i for i, p in enumerate(all_paths)}
+            image_paths = image_paths_in
+            true_labels = [all_labels[index_by_path[p]] for p in image_paths_in]
 
         if not image_paths:
             raise ValueError("No image files found in dataset")
@@ -175,6 +196,42 @@ def task_primary_and_per_class_metrics(y_true, y_pred_classes, class_names):
     )
     df_report = pd.DataFrame(report).transpose()
     return df_report
+
+
+def train_baseline_and_evaluate(X_train_paths: list[str], y_train: list[int], X_test_paths: list[str], y_test: list[int], class_names: list[str], input_size: tuple[int, int]):
+    """Train a simple Logistic Regression on flattened resized pixels and evaluate on test split."""
+    from sklearn.linear_model import LogisticRegression
+    import numpy as np
+    # Prepare train data
+    def load_and_flatten(paths):
+        feats = []
+        for p in paths:
+            img = Image.open(p).convert("RGB")
+            img = img.resize(input_size)
+            arr = np.array(img) / 255.0
+            feats.append(arr.flatten())
+        return np.array(feats)
+
+    X_train = load_and_flatten(X_train_paths)
+    X_test = load_and_flatten(X_test_paths)
+
+    clf = LogisticRegression(max_iter=1000, n_jobs=None)
+    clf.fit(X_train, y_train)
+    y_test_pred = clf.predict(X_test)
+    if hasattr(clf, "predict_proba"):
+        y_test_proba = clf.predict_proba(X_test)
+    else:
+        # Fallback to one-hot of predicted
+        y_test_proba = np.eye(len(class_names))[y_test_pred]
+
+    # Metrics table
+    report = classification_report(y_test, y_test_pred, target_names=class_names, output_dict=True)
+    df_report = pd.DataFrame(report).transpose()
+    return {
+        "y_pred": y_test_pred,
+        "y_proba": y_test_proba,
+        "report_df": df_report,
+    }
 
 
 def task_confusion_matrix_and_roc(y_true, y_pred_probs, class_names):
@@ -897,7 +954,8 @@ def main():
     report_data["data_counts_df"] = task_data_list_and_counts()
 
     # Step 3: Data Split Info (for baseline) [cite: 28]
-    report_data["data_split_info"] = task_data_split(report_data["data_counts_df"])
+    split_info = task_data_split(report_data["data_counts_df"])
+    report_data["data_split_info"] = {k: split_info[k] for k in ["split_ratio", "split_seed"]}
 
     # Step 4: Load Model [cite: 30]
     model = task_load_model()
@@ -916,7 +974,7 @@ def main():
     # Step 5 & 6: Preprocessing and Inference [cite: 32, 33]
     try:
         y_true, y_pred_probs, y_pred_classes, class_names, input_shape = (
-            task_preprocessing_and_inference(model)
+            task_preprocessing_and_inference(model, image_paths_in=split_info["X_test"])
         )
         report_data["preprocessing_info"] = (
             f"Images were resized to {input_shape} and normalized to [0, 1]."
@@ -936,6 +994,17 @@ def main():
     report_data["metrics_df"] = task_primary_and_per_class_metrics(
         y_true, y_pred_classes, class_names
     )
+
+    # Train and evaluate baseline on train/test split
+    print("Training baseline (Logistic Regression on flattened pixels)...")
+    baseline_results = train_baseline_and_evaluate(
+        split_info["X_train"], split_info["y_train"], split_info["X_test"], split_info["y_test"], class_names, input_shape
+    )
+    report_data["baseline_report_df"] = baseline_results["report_df"]
+    report_data["baseline_results_raw"] = {
+        "y_pred": baseline_results["y_pred"].tolist(),
+        "y_proba": baseline_results["y_proba"].tolist(),
+    }
 
     # Step 8: Confusion Matrix and ROC [cite: 38]
     cm_b64, roc_b64 = task_confusion_matrix_and_roc(y_true, y_pred_probs, class_names)
