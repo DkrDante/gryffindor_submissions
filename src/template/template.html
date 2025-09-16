@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comprehensive Model Evaluation Report</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 300;
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 2rem;
+      }
+
+      h2 {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 0.5rem;
+        margin: 2rem 0 1rem 0;
+        font-size: 1.8rem;
+      }
+
+      h3 {
+        color: #34495e;
+        margin: 1.5rem 0 0.5rem 0;
+        font-size: 1.3rem;
+      }
+
+      .executive-summary {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        margin: 2rem 0;
+        border-left: 5px solid #3498db;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+      }
+
+      .summary-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-top: 4px solid #3498db;
+      }
+
+      .summary-card h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .summary-card ul {
+        list-style: none;
+      }
+
+      .summary-card li {
+        padding: 0.3rem 0;
+        border-bottom: 1px solid #ecf0f1;
+      }
+
+      .summary-card li:last-child {
+        border-bottom: none;
+      }
+
+      .key-findings,
+      .recommendations {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .key-findings {
+        border-left: 4px solid #27ae60;
+      }
+
+      .recommendations {
+        border-left: 4px solid #e74c3c;
+      }
+
+      .key-findings ul,
+      .recommendations ul {
+        margin-left: 1rem;
+      }
+
+      .key-findings li,
+      .recommendations li {
+        margin: 0.5rem 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+      }
+
+      th {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+      }
+
+      tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .metric-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-top: 4px solid #3498db;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .metric-label {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin: 1rem 0;
+      }
+
+      .plot-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 1rem 0;
+        text-align: center;
+      }
+
+      .error-message {
+        background: #e74c3c;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: 500;
+      }
+
+      .success-message {
+        background: #27ae60;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: 500;
+      }
+
+      .info-box {
+        background: #3498db;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .baseline-comparison {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .baseline-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-top: 4px solid #9b59b6;
+      }
+
+      .baseline-name {
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .baseline-accuracy {
+        font-size: 1.5rem;
+        color: #27ae60;
+        font-weight: bold;
+      }
+
+      .robustness-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .robustness-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-top: 4px solid #f39c12;
+      }
+
+      .robustness-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #e67e22;
+      }
+
+      .footer {
+        background: #2c3e50;
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .footer p {
+        opacity: 0.8;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          margin: 0;
+          border-radius: 0;
+        }
+
+        .content {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 Model Evaluation Report</h1>
+        <p>Comprehensive Analysis & Performance Assessment</p>
+      </div>
+
+      <div class="content">
+        <!-- Executive Summary -->
+        {{ summary | safe }}
+
+        <!-- Environment Information -->
+        <h2>🔧 Environment & Configuration</h2>
+        <div class="info-box">
+          <ul style="list-style: none">
+            <li>
+              <strong>Python Version:</strong> {{ env_snapshot.python_version }}
+            </li>
+            <li>
+              <strong>TensorFlow Version:</strong> {{
+              env_snapshot.tensorflow_version }}
+            </li>
+            <li>
+              <strong>NumPy Version:</strong> {{ env_snapshot.numpy_version }}
+            </li>
+            <li>
+              <strong>Pandas Version:</strong> {{ env_snapshot.pandas_version }}
+            </li>
+            <li>
+              <strong>Random Seed:</strong> {{ env_snapshot.random_seed_used }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Dataset Information -->
+        <h2>📊 Dataset Overview</h2>
+        {{ data_counts_df.to_html(index=False, classes="table") | safe }}
+
+        <!-- Model Loading -->
+        <h2>🤖 Model Information</h2>
+        {% if model_load_error %}
+        <div class="error-message">
+          <strong>❌ Model Loading Failed:</strong> {{ model_load_error }}
+        </div>
+        {% else %}
+        <div class="success-message">
+          <strong>✅ Model Loaded Successfully</strong>
+        </div>
+        <div class="info-box">
+          <p><strong>Preprocessing:</strong> {{ preprocessing_info }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Primary Metrics -->
+        <h2>📈 Performance Metrics</h2>
+        {{ metrics_df.to_html(classes="table") | safe }}
+
+        <!-- Bootstrap Confidence Intervals -->
+        {% if bootstrap_ci and not bootstrap_ci.get('error') %}
+        <h2>📊 Bootstrap Confidence Intervals</h2>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "%.3f"|format(bootstrap_ci.accuracy_ci[0]) }} - {{
+              "%.3f"|format(bootstrap_ci.accuracy_ci[1]) }}
+            </div>
+            <div class="metric-label">Accuracy 95% CI</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "%.3f"|format(bootstrap_ci.f1_macro_ci[0]) }} - {{
+              "%.3f"|format(bootstrap_ci.f1_macro_ci[1]) }}
+            </div>
+            <div class="metric-label">F1-Score 95% CI</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">{{ bootstrap_ci.n_bootstrap }}</div>
+            <div class="metric-label">Bootstrap Samples</div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Baseline Comparison -->
+        {% if baseline_results and not baseline_results.get('error') %}
+        <h2>🏆 Baseline Model Comparison</h2>
+        <div class="baseline-comparison">
+          {% for name, results in baseline_results.items() %} {% if not
+          results.get('error') %}
+          <div class="baseline-card">
+            <div class="baseline-name">{{ name }}</div>
+            <div class="baseline-accuracy">
+              {{ "%.3f"|format(results.accuracy) }}
+            </div>
+            <div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 0.5rem">
+              F1: {{ "%.3f"|format(results.f1_macro) }}
+            </div>
+          </div>
+          {% endif %} {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Statistical Significance -->
+        {% if stat_test and not stat_test.get('error') %}
+        <h2>📊 Statistical Significance Tests</h2>
+        <div class="info-box">
+          {% for name, test in stat_test.items() %} {% if not test.get('error')
+          %}
+          <p>
+            <strong>{{ name }}:</strong>
+            Difference: {{ "%.3f"|format(test.difference) }}, P-value: {{
+            "%.3f"|format(test.p_value) }},
+            <span
+              style="color: {{ '#27ae60' if test.significant else '#e74c3c' }}"
+            >
+              {{ 'Significant' if test.significant else 'Not Significant' }}
+            </span>
+          </p>
+          {% endif %} {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Calibration Analysis -->
+        {% if calibration_results and not calibration_results.get('error') %}
+        <h2>🎯 Model Calibration Analysis</h2>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "%.3f"|format(calibration_results.brier_score) }}
+            </div>
+            <div class="metric-label">Brier Score</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "%.3f"|format(calibration_results.ece) }}
+            </div>
+            <div class="metric-label">Expected Calibration Error</div>
+          </div>
+        </div>
+        {% if calibration_results.calibration_plot_b64 %}
+        <div class="plot-container">
+          <h3>Calibration Plot</h3>
+          <img
+            src="data:image/png;base64,{{ calibration_results.calibration_plot_b64 }}"
+            alt="Calibration Plot"
+          />
+        </div>
+        {% endif %} {% endif %}
+
+        <!-- Robustness Testing -->
+        {% if robustness_results and not robustness_results.get('error') %}
+        <h2>🛡️ Robustness Analysis</h2>
+        <div class="robustness-metrics">
+          <div class="robustness-card">
+            <div class="robustness-value">
+              {{ "%.3f"|format(robustness_results.original_confidence) }}
+            </div>
+            <div class="metric-label">Original Confidence</div>
+          </div>
+          <div class="robustness-card">
+            <div class="robustness-value">
+              {{ "%.3f"|format(robustness_results.noise_confidence) }}
+            </div>
+            <div class="metric-label">Noise Corruption</div>
+          </div>
+          <div class="robustness-card">
+            <div class="robustness-value">
+              {{ "%.3f"|format(robustness_results.brightness_confidence) }}
+            </div>
+            <div class="metric-label">Brightness Corruption</div>
+          </div>
+          <div class="robustness-card">
+            <div class="robustness-value">
+              {{ "%.1f"|format(robustness_results.noise_robustness * 100) }}%
+            </div>
+            <div class="metric-label">Noise Robustness</div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Explainability Analysis -->
+        {% if explainability_results and not explainability_results.get('error')
+        %}
+        <h2>🔍 Model Explainability</h2>
+        <div class="info-box">
+          <p>
+            <strong>Predicted Class:</strong> {{
+            explainability_results.predicted_class }}
+          </p>
+          <p>
+            <strong>Confidence:</strong> {{
+            "%.3f"|format(explainability_results.confidence) }}
+          </p>
+        </div>
+        {% if explainability_results.explainability_plot_b64 %}
+        <div class="plot-container">
+          <h3>Grad-CAM Visualization</h3>
+          <img
+            src="data:image/png;base64,{{ explainability_results.explainability_plot_b64 }}"
+            alt="Grad-CAM Visualization"
+          />
+        </div>
+        {% endif %} {% endif %}
+
+        <!-- Visualizations -->
+        <h2>📊 Model Visualizations</h2>
+
+        <!-- Confusion Matrix -->
+        {% if confusion_matrix_b64 %}
+        <div class="plot-container">
+          <h3>Confusion Matrix</h3>
+          <img
+            src="data:image/png;base64,{{ confusion_matrix_b64 }}"
+            alt="Confusion Matrix"
+          />
+        </div>
+        {% endif %}
+
+        <!-- ROC Curves -->
+        {% if roc_curve_b64 %}
+        <div class="plot-container">
+          <h3>ROC Curves (One-vs-Rest)</h3>
+          <img
+            src="data:image/png;base64,{{ roc_curve_b64 }}"
+            alt="ROC Curves"
+          />
+        </div>
+        {% endif %}
+
+        <!-- Efficiency Metrics -->
+        <h2>⚡ Model Efficiency</h2>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "%.2f"|format(efficiency_metrics.model_file_size_mb) }} MB
+            </div>
+            <div class="metric-label">Model Size</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "{:,}".format(efficiency_metrics.total_parameters) }}
+            </div>
+            <div class="metric-label">Total Parameters</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "{:,}".format(efficiency_metrics.trainable_parameters) }}
+            </div>
+            <div class="metric-label">Trainable Parameters</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "{:,}".format(efficiency_metrics.non_trainable_parameters) }}
+            </div>
+            <div class="metric-label">Non-trainable Parameters</div>
+          </div>
+        </div>
+        <!-- Quantization Analysis -->
+        {% if efficiency_metrics.quantization and not
+        efficiency_metrics.quantization.get('error') %}
+        <h3>🔧 Quantization Analysis</h3>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-value">
+              {{
+              "%.1f"|format(efficiency_metrics.quantization.size_reduction_percent)
+              }}%
+            </div>
+            <div class="metric-label">Size Reduction</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{
+              "%.2f"|format(efficiency_metrics.quantization.compression_ratio)
+              }}x
+            </div>
+            <div class="metric-label">Compression Ratio</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{
+              "%.4f"|format(efficiency_metrics.quantization.accuracy_difference)
+              }}
+            </div>
+            <div class="metric-label">Accuracy Difference</div>
+          </div>
+        </div>
+        {% elif efficiency_metrics.quantization and
+        efficiency_metrics.quantization.get('error') %}
+        <h3>🔧 Quantization Analysis</h3>
+        <div class="error-message">
+          <strong>Quantization Error:</strong> {{
+          efficiency_metrics.quantization.error }}
+        </div>
+        {% endif %}
+
+        <!-- Pruning Analysis -->
+        {% if efficiency_metrics.pruning and not
+        efficiency_metrics.pruning.get('error') %}
+        <h3>✂️ Pruning Analysis</h3>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-value">
+              {{
+              "%.1f"|format(efficiency_metrics.pruning.parameter_reduction_percent)
+              }}%
+            </div>
+            <div class="metric-label">Parameter Reduction</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "%.3f"|format(efficiency_metrics.pruning.accuracy_drop) }}
+            </div>
+            <div class="metric-label">Accuracy Drop</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">
+              {{ "{:,}".format(efficiency_metrics.pruning.pruned_parameters) }}
+            </div>
+            <div class="metric-label">Pruned Parameters</div>
+          </div>
+        </div>
+        {% elif efficiency_metrics.pruning and
+        efficiency_metrics.pruning.get('error') %}
+        <h3>✂️ Pruning Analysis</h3>
+        <div class="error-message">
+          <strong>Pruning Error:</strong> {{ efficiency_metrics.pruning.error }}
+        </div>
+        {% endif %}
+
+        <div class="info-box">
+          <p><strong>Notes:</strong> {{ efficiency_metrics.notes }}</p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          Report generated on {{ moment().format('YYYY-MM-DD HH:mm:ss') if
+          moment else 'Unknown Date' }}
+        </p>
+        <p>Comprehensive Model Evaluation Framework</p>
+      </div>
+    </div>
+  </body>
+</html>
