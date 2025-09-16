@@ -1,10 +1,10 @@
-# 🤖 Comprehensive Model Evaluation Framework
+#  Comprehensive Model Evaluation Framework
 
 A robust, production-ready machine learning model evaluation framework that provides comprehensive analysis and beautiful HTML reports.
 
-## ✨ Features
+## Features
 
-### 🎯 **Core Evaluation**
+### **Core Evaluation**
 
 - **Environment Snapshot**: Python, TensorFlow, NumPy, Pandas versions
 - **Dataset Analysis**: Class distribution and image counts
@@ -12,14 +12,14 @@ A robust, production-ready machine learning model evaluation framework that prov
 - **Preprocessing**: Image resizing, normalization, and batch processing
 - **Inference**: Efficient model prediction on all dataset images
 
-### 📊 **Performance Metrics**
+###  **Performance Metrics**
 
 - **Primary Metrics**: Accuracy, Precision, Recall, F1-Score (macro/micro/weighted)
 - **Confusion Matrix**: Visual representation of classification results
 - **ROC Curves**: One-vs-Rest ROC analysis with AUC scores
 - **Bootstrap Confidence Intervals**: 95% CI for key metrics (100 bootstrap samples)
 
-### 🏆 **Advanced Analysis**
+### **Advanced Analysis**
 
 - **Baseline Comparison**: Logistic Regression and Random Forest baselines
 - **Statistical Significance**: McNemar's test for model comparison
@@ -33,7 +33,7 @@ A robust, production-ready machine learning model evaluation framework that prov
 - **Parameter Count**: Total, trainable, and non-trainable parameters
 - **Performance**: Inference time and memory usage
 
-### 🎨 **Beautiful Reports**
+###  **Beautiful Reports**
 
 - **Modern UI**: Responsive design with gradient backgrounds
 - **Interactive Elements**: Hover effects and smooth transitions
@@ -41,7 +41,7 @@ A robust, production-ready machine learning model evaluation framework that prov
 - **Visual Analytics**: Embedded plots and charts
 - **Mobile Friendly**: Responsive design for all devices
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -238,7 +238,7 @@ report_data["custom_metric"] = custom_metric_function(y_true, y_pred)
 - Implement additional robustness tests
 - Include more explainability methods
 
-## 🐛 Error Handling
+##  Error Handling
 
 The framework includes comprehensive error handling for:
 
@@ -248,14 +248,14 @@ The framework includes comprehensive error handling for:
 - **Template errors**: Fallback error pages
 - **Memory issues**: Efficient batch processing
 
-## 📈 Performance
+## Performance
 
 - **Evaluation Time**: ~30-60 seconds for typical datasets
 - **Memory Usage**: Optimized for large datasets
 - **Report Size**: 100-200KB HTML with embedded visualizations
 - **Scalability**: Handles datasets with thousands of images
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -263,27 +263,12 @@ The framework includes comprehensive error handling for:
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - TensorFlow/Keras team for the ML framework
 - Scikit-learn for evaluation metrics
 - Matplotlib/Seaborn for visualizations
 - Jinja2 for templating
 
-## 📞 Support
 
-For questions or issues:
-
-1. Check the error messages in the console output
-2. Verify your dataset structure matches requirements
-3. Ensure all dependencies are installed correctly
-4. Check that your model is compatible with TensorFlow 2.x
-
----
-
-**Made with ❤️ for comprehensive ML model evaluation**
-# gryffindor_submissions

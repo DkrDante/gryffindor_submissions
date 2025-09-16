@@ -1,0 +1,1 @@
+Model achieves moderate performance on synthetic data. Calibration acceptable; robustness drops under noise/brightness. Baseline not yet representative; future work: better baseline and full robustness suite.
